@@ -1,5 +1,5 @@
 # APB_Protocol
-.
+
 ### APB Protocol Signal Description  
 The following explanation describes the **APB Master** (controller) connected to a **RAM Slave** (memory component).  
 
