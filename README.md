@@ -1,61 +1,68 @@
 # APB_Protocol
-פירוט האותות בשרטוט פרוטוקול APB
-השרטוט מציג APB MASTER (הבקר) שמחובר ל-RAM SLAVE (רכיב זיכרון). להלן הסבר על כל האותות שמופיעים בשרטוט:
+.
+### APB Protocol Signal Description  
+The following explanation describes the **APB Master** (controller) connected to a **RAM Slave** (memory component).  
 
-כניסות ל-APB MASTER (מהמערכת העליונה):
-PCLK (Clock):
+#### **Inputs to the APB Master (from the system):**  
+1. **PCLK (Clock):**  
+   - The system clock that synchronizes the Master’s operation.  
+   - Serves as the timing reference for APB operations.  
 
-שעון המערכת שמסנכרן את פעולת ה-Master.
-משמש כבסיס לזמן פעולת ה-APB.
-PRESETn (Reset):
+2. **PRESETn (Reset):**  
+   - An active-low reset signal that initializes the system.  
+   - Ensures the Master starts from a known state.  
 
-אות איפוס אקטיבי נמוך שמאפס את כל המערכת.
-מוודא שה-Master מתחיל ממצב מוגדר.
-transfer:
+3. **transfer:**  
+   - An internal signal that indicates the start of a transfer operation (communication start).  
 
-אות פנימי שמסמן את תחילת הפעולה (סימון התחלת תקשורת).
-READ_WRITE:
+4. **READ_WRITE:**  
+   - Determines whether the operation is a write (1) or a read (0).  
 
-אות שקובע אם הפעולה היא כתיבה (1) או קריאה (0).
-apb_write_paddr[7:0]:
+5. **apb_write_paddr[7:0]:**  
+   - Target address for write operations.  
+   - Width: 8 bits.  
 
-כתובת היעד של פעולת הכתיבה.
-רוחב: 8 ביטים (לדוגמה).
-apb_write_data[7:0]:
+6. **apb_write_data[7:0]:**  
+   - Data to be written to the Slave.  
+   - Width: 8 bits.  
 
-נתונים שיש לכתוב ל-Slave.
-רוחב: 8 ביטים.
-apb_read_paddr[7:0]:
+7. **apb_read_paddr[7:0]:**  
+   - Target address for read operations.  
+   - Width: 8 bits.  
 
-כתובת היעד של פעולת הקריאה.
-רוחב: 8 ביטים.
-יציאות מה-APB MASTER (לכיוון RAM SLAVE):
-paddr[7:0]:
+---
 
-כתובת היעד שמועברת ל-Slave.
-מתקבלת מהאותות הפנימיים של ה-Master (apb_write_paddr או apb_read_paddr).
-pwdata[7:0]:
+#### **Outputs from the APB Master (to the RAM Slave):**  
+1. **paddr[7:0]:**  
+   - Target address sent to the Slave.  
+   - Derived from the Master’s internal signals (`apb_write_paddr` or `apb_read_paddr`).  
 
-נתוני הכתיבה שמועברים מה-Master ל-Slave.
-מתקבל מה-apb_write_data.
-PWRITE:
+2. **pwdata[7:0]:**  
+   - Write data sent from the Master to the Slave.  
+   - Derived from `apb_write_data`.  
 
-קובע אם הפעולה היא כתיבה (1) או קריאה (0).
-PENABLE:
+3. **PWRITE:**  
+   - Indicates whether the operation is a write (1) or a read (0).  
 
-אות הפעלה שאומר ל-Slave שהבקשה מוכנה לעיבוד.
-נכנס לשימוש במצב ACCESS.
-כניסות ל-APB MASTER (מה-SLAVE חזרה):
-PREADY:
+4. **PENABLE:**  
+   - Control signal indicating to the Slave that the request is ready for processing.  
+   - Activated in the **ACCESS** state.  
 
-מציין אם ה-Slave מוכן להשלים את הפעולה.
-1: ה-Slave מוכן להמשיך.
-0: ה-Slave עדיין לא מוכן.
-PRDATA[7:0]:
+---
 
-נתוני קריאה שנשלחים מה-Slave חזרה ל-Master.
-רוחב: 8 ביטים.
-יציאות מה-APB MASTER (למערכת העליונה):
-apb_read_data_out[7:0]:
-נתוני הקריאה שהתקבלו מה-Slave לאחר פעולת קריאה.
-רוחב: 8 ביטים.
+#### **Inputs to the APB Master (from the RAM Slave):**  
+1. **PREADY:**  
+   - Indicates whether the Slave is ready to complete the operation.  
+     - `1`: The Slave is ready to proceed.  
+     - `0`: The Slave is not yet ready.  
+
+2. **PRDATA[7:0]:**  
+   - Read data sent from the Slave back to the Master.  
+   - Width: 8 bits.  
+
+---
+
+#### **Outputs from the APB Master (to the system):**  
+1. **apb_read_data_out[7:0]:**  
+   - The read data received from the Slave after a read operation.  
+   - Width: 8 bits.  
