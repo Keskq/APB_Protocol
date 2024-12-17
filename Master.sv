@@ -14,7 +14,7 @@ module master_bridge(
 
 
 reg [1:0] state, next_state;
-local param IDLE=2'b00, SETUP=2'b01, ACCSES=2'b10;
+local param IDLE=2'b00, SETUP=2'b01, ACCSESS=2'b10;
 
 always @(poseedge PCLK)  // avery time the clock rise
 begin 
@@ -27,12 +27,13 @@ end
 always_comb begin
     case(state)
 	IDLE: begin
-	    PENABLE =0;
+	    PENABLE= 0;
 		if (!transfer)
 		    next_state= IDLE;
 		else
 		    next_state= SETUP;
 		end
+	        
 	SETUP: begin
 	    PENABLE= 0;
 	    if(READ_WRITE) // if the action is writing
@@ -44,32 +45,67 @@ always_comb begin
 		begin
 		    PADDR= apb_read_paddr;
 		end
-  
+	ACCESS: begin 
+	    if (PSEL1 || PSEL2) begin
+		      PENABLE = 1; 
+		      if (PSLVERR) begin
+		        next_state = IDLE; 
+		      end 
+		      else if (PREADY) begin
+			        if (READ_WRITE) begin
+			          apb_read_data_out = PRDATA;
+			        end
+				else begin
+				  PWDATA= apb_write_data;
+				end	
+			        next_state = (transfer) ? SETUP : IDLE; 
+		      end 
+		      else begin
+		        next_state = ACCESS; 
+		      end
+	    end
+	    else begin
+		    next_state= IDLE;
+	    end	    
+end	
+			
+
+
+
+
+
+
+
+
+
+
+
+		
   ACCESS: begin 
       if (PSEL1 || PSEL2) begin
-        PENABLE = 1;
+        PENABLE= 1;
         if (PSLVERR) begin
-          next_state = IDLE;
+          next_state= IDLE;
         end 
         else if (PREADY) begin
           if (READ_WRITE) begin
-            apb_read_data_out = PRDATA; 
+            apb_read_data_out= PRDATA; 
           end
           else begin
-            PWDATA <= apb_write_data;
+            PWDATA= apb_write_data;
           end
           if (transfer) begin
-            next_state = SETUP; 
+            next_state= SETUP; 
           end 
           else begin
-            next_state = IDLE;
+            next_state= IDLE;
           end
         end 
         else begin
-          next_state = ACCESS; 
+          next_state= ACCESS; 
         end
       end 
       else begin
-        next_state = IDLE;
+        next_state= IDLE;
       end
     end
