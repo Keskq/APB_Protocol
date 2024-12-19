@@ -1,6 +1,6 @@
 `timescale 1ns/1ns
 
-module master_bridge(
+module apb_master(
         input PRESETn,PCLK,READ_WRITE,transfer
         input PREADY,
       	input [7:0]apb_write_paddr,apb_read_paddr,
