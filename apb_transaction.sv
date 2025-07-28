@@ -10,7 +10,6 @@ class apb_transaction extends uvm_sequence_item;
   rand bit [31:0] data;     //Data - For write or read response
   rand access_type  pwrite;       //command type
   bit pslverr;
-  state_type state;
   
   //constraint c1{addr[31:0]>=32'd270; addr[31:0] <32'd273;};
   //constraint c1{addr[31:0]>=32'd0; addr[31:0] <32'd5;};
